@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🐰 李松河泡泡聊天室 | AI智能对话 · 可配置API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f7a1bc 0%, #f7b5cb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Roboto', 'Noto Sans KR', system-ui, sans-serif;
+            padding: 16px;
+            margin: 0;
+        }
+
+        /* 手机卡片容器 */
+        .phone-app {
+            width: 100%;
+            max-width: 380px;
+            height: 700px;
+            background-color: #fff2f8;
+            border-radius: 44px;
+            box-shadow: 0 30px 40px rgba(0, 0, 0, 0.25), 0 0 0 8px #fcd9e6, 0 0 0 12px #f8c4d6;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* 动态飘落小熊 */
+        .floating-bears {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .bear {
+            position: absolute;
+            font-size: 28px;
+            animation: fall linear forwards;
+            user-select: none;
+            opacity: 0.75;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-30px) rotate(0deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(740px) rotate(12deg);
+                opacity: 0;
+            }
+        }
+
+        /* 聊天头部 */
+        .chat-header {
+            background: #ffb3c6;
+            padding: 18px 18px 12px 18px;
+            border-bottom: 2px solid #ff9bb2;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .profile-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 56px;
+            height: 56px;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2.5px solid white;
+            background-color: #ffe0e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+
+        .change-avatar-btn {
+            position: absolute;
+            bottom: -4px;
+            right: -8px;
+            background: #ff6b8f;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 30px;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            font-weight: bold;
+            transition: all 0.1s;
+        }
+        .change-avatar-btn:active { transform: scale(0.92); background: #e85a7c;}
+
+        .artist-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .artist-name {
+            font-weight: 800;
+            font-size: 18px;
+            color: #572c3e;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: #ffda77;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 30px;
+            color: #572c3e;
+            font-weight: bold;
+        }
+
+        .status {
+            font-size: 11px;
+            color: #ac5775;
+            margin-top: 4px;
+        }
+
+        /* API配置按钮 */
+        .api-config-btn {
+            background: #ff8aa8;
+            border: none;
+            color: white;
+            font-size: 20px;
+            width: 38px;
+            height: 38px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .api-config-btn:active { transform: scale(0.94); }
+
+        /* 消息区域 */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #fff7fb;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+            animation: fadeInUp 0.2s ease-out;
+        }
+
+        .message.user {
+            align-self: flex-end;
+        }
+
+        .message.songha {
+            align-self: flex-start;
+        }
+
+        .bubble {
+            padding: 10px 14px;
+            border-radius: 22px;
+            font-size: 14px;
+            line-height: 1.45;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        .user .bubble {
+            background: #ffbfcf;
+            color: #351f28;
+            border-bottom-right-radius: 5px;
+            font-weight: 500;
+        }
+
+        .songha .bubble {
+            background: white;
+            border: 1px solid #ffd0dd;
+            color: #4f2e3c;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-name {
+            font-size: 11px;
+            margin-bottom: 4px;
+            margin-left: 8px;
+            color: #cf7e9b;
+            font-weight: 600;
+        }
+
+        .user .message-name {
+            text-align: right;
+            margin-right: 8px;
+            margin-left: 0;
+        }
+
+        .timestamp {
+            font-size: 9px;
+            color: #dd9fb5;
+            margin-top: 4px;
+            margin-left: 12px;
+        }
+
+        .user .timestamp {
+            text-align: right;
+            margin-right: 12px;
+        }
+
+        /* 输入区域 */
+        .input-area {
+            background: #ffeef4;
+            padding: 12px 16px;
+            border-top: 1px solid #ffdae5;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .input-box {
+            flex: 1;
+            background: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 18px;
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+            color: #311e26;
+            resize: none;
+            max-height: 85px;
+        }
+
+        .input-box:focus {
+            border: 1px solid #ff9bb5;
+            box-shadow: 0 0 0 2px #ffe2ec;
+        }
+
+        .send-btn {
+            background: #ff89aa;
+            border: none;
+            width: 46px;
+            height: 46px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.12s ease;
+            color: white;
+        }
+
+        .send-btn:active { transform: scale(0.94); background: #ff6b91; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-messages::-webkit-scrollbar { width: 4px; }
+        .chat-messages::-webkit-scrollbar-track { background: #ffe2ec; border-radius: 10px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: #f5a7c0; border-radius: 10px; }
+
+        /* API配置模态框 - 增强版 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .api-modal {
+            background: white;
+            width: 340px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border-radius: 32px;
+            padding: 24px 20px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .api-modal h3 {
+            color: #572c3e;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+        .api-modal input, .api-modal select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ffc0d0;
+            border-radius: 30px;
+            font-size: 14px;
+            outline: none;
+            background: #fffafc;
+        }
+        .api-modal button {
+            background: #ff89aa;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            margin-top: 12px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        .api-status {
+            font-size: 12px;
+            margin-top: 12px;
+            color: #ac5775;
+        }
+        .test-btn, .fetch-models-btn {
+            background: #ffb3c6;
+            color: #572c3e;
+        }
+        .model-list-container {
+            margin-top: 12px;
+            text-align: left;
+            background: #fff0f5;
+            border-radius: 20px;
+            padding: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+        .model-item {
+            padding: 8px;
+            margin: 4px 0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.05s linear;
+            font-size: 13px;
+        }
+        .model-item:hover {
+            background: #ffe2ec;
+        }
+        .model-item.selected {
+            background: #ffbfcf;
+            font-weight: bold;
+            border-left: 4px solid #ff6b8f;
+        }
+        .loading-text {
+            color: #ff8aa8;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="phone-app">
+    <div class="floating-bears" id="bearContainer"></div>
+
+    <div class="chat-header">
+        <div class="profile-area">
+            <div class="avatar-wrapper">
+                <img id="avatarImg" class="avatar-img" src="https://picsum.photos/id/20/100/100" alt="myAvatar">
+                <button class="change-avatar-btn" id="changeAvatarBtn" aria-label="更换头像">📷</button>
+            </div>
+            <div class="artist-info">
+                <div class="artist-name">이송하 · LEE SONGHA <span class="badge">🐣 练习生</span></div>
+                <div class="status" id="liveStatus">💗 等待你的消息...</div>
+            </div>
+        </div>
+        <button class="api-config-btn" id="apiConfigBtn">⚙️</button>
+    </div>
+
+    <div class="chat-messages" id="chatMessages"></div>
+
+    <div class="input-area">
+        <textarea rows="1" class="input-box" id="messageInput" placeholder="TO. 송하  💬 输入任何话，松河都会用心回复..."></textarea>
+        <button class="send-btn" id="sendBtn">➤</button>
+    </div>
+
+    <!-- API配置弹窗（支持自定义端口、密钥拉取模型）-->
+    <div class="modal-overlay" id="apiModal">
+        <div class="api-modal">
+            <h3>🔌 API 配置 (自定义端口/地址)</h3>
+            <input type="text" id="apiBaseUrl" placeholder="API基础地址 (含端口) 例: http://127.0.0.1:1234/v1" value="https://api.siliconflow.cn/v1">
+            <input type="text" id="apiKey" placeholder="API Key (密钥)" value="">
+            <button id="fetchModelsBtn" class="fetch-models-btn">📡 填入密钥后自动拉取模型列表</button>
+            
+            <div class="model-list-container" id="modelListContainer">
+                <div style="text-align:center; padding:8px;">⚡ 点击上方按钮拉取可用模型</div>
+            </div>
+            <select id="modelSelect" style="display:none;"></select>
+            
+            <button id="saveApiBtn">💾 保存配置 & 启用AI</button>
+            <button id="testApiBtn" class="test-btn">🔌 测试连接</button>
+            <div class="api-status" id="apiStatus">⚙️ 配置API后即可使用AI智能对话 (未配置时使用本地剧情)</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ----------------------------- 增强版：支持自定义端口 + 密钥拉取模型 -----------------------------
+        const messagesContainer = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const avatarImg = document.getElementById('avatarImg');
+        const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+        const liveStatusSpan = document.getElementById('liveStatus');
+        const apiConfigBtn = document.getElementById('apiConfigBtn');
+        const apiModal = document.getElementById('apiModal');
+        const apiBaseUrlInput = document.getElementById('apiBaseUrl');
+        const apiKeyInput = document.getElementById('apiKey');
+        const fetchModelsBtn = document.getElementById('fetchModelsBtn');
+        const modelListContainer = document.getElementById('modelListContainer');
+        const saveApiBtn = document.getElementById('saveApiBtn');
+        const testApiBtn = document.getElementById('testApiBtn');
+        const apiStatusDiv = document.getElementById('apiStatus');
+        
+        // 状态变量
+        let isReplying = false;
+        let pendingSend = false;
+        let apiConfigured = false;
+        let currentBaseUrl = localStorage.getItem('songha_base_url') || 'https://api.siliconflow.cn/v1';
+        let currentApiKey = localStorage.getItem('songha_api_key') || '';
+        let currentModel = localStorage.getItem('songha_model') || '';
+        let availableModels = [];   // 存储拉取到的模型列表
+        
+        // 对话历史 & 本地防重复
+        let conversationHistory = [];
+        let lastTriggeredCategory = null;
+        let categoryHistory = [];
+        let lastUserMessages = [];
+        
+        // 初始化加载已有配置
+        apiBaseUrlInput.value = currentBaseUrl;
+        apiKeyInput.value = currentApiKey;
+        if(currentApiKey && currentBaseUrl) apiConfigured = true;
+        
+        // 辅助函数
+        function getCurrentTimeString() {
+            const now = new Date();
+            return `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+        }
+        
+        function updateDynamicStatus() {
+            const statuses = ["🎧 听歌中 • 刚好放到你的播放列表", "🍚 刚刚吃完晚餐 • 今天练习超努力",
+                "💭 在想你 • 有没有好好吃饭呀", "🐰 休息中 • 跟成员们玩了一会游戏",
+                "📝 写歌词灵感 • 想到和你散步的场景", "✨ 在线 • 等你消息~ 啾"];
+            let newStatus = statuses[Math.floor(Math.random() * statuses.length)];
+            if (liveStatusSpan) liveStatusSpan.innerText = newStatus;
+            setTimeout(updateDynamicStatus, 38000 + Math.random() * 15000);
+        }
+        updateDynamicStatus();
+        
+        function addMessage(role, koreanText, chineseTranslation, extraEmoji = "") {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            let bubbleContent = '';
+            if (role === 'songha') {
+                bubbleContent = `${koreanText} ${extraEmoji ? extraEmoji : ''}<br><span style="font-size: 11px; color:#bf708c;">✧ 译：${chineseTranslation}</span>`;
+            } else {
+                bubbleContent = `${koreanText || chineseTranslation}`;
+            }
+            messageDiv.innerHTML = `
+                <div class="message-name">${role === 'songha' ? '🐰 송하' : '✨ 나 ✨'}</div>
+                <div class="bubble">${bubbleContent}</div>
+                <div class="timestamp">${getCurrentTimeString()}</div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            if(role === 'user') {
+                conversationHistory.push({ role: 'user', content: koreanText || chineseTranslation });
+            } else {
+                conversationHistory.push({ role: 'assistant', content: `${koreanText} (${chineseTranslation})` });
+            }
+            if(conversationHistory.length > 12) conversationHistory.shift();
+        }
+        
+        // 本地剧情（防重复，保留丰富细节）
+        function generateLocalReply(userMessage) {
+            const lowerMsg = userMessage.toLowerCase();
+            let replyObj = null;
+            const greet = () => ({ k: "어! 너 왔구나~ 오늘 아침에 일어나자마자 네 생각 났어 ☀️ 연습하다가 웃었어 😆", c: "啊！你来啦~ 今天早上起床后就想到你了☀️ 练习时突然笑了😆", category: "greet" });
+            const care = () => ({ k: "😢 헉... 내가 피곤한 거 어떻게 알았어? 오늘 조금 힘들었는데 네가 물어봐 줘서 힘 나! 🥺💗", c: "😢 吓一跳.. 你怎么知道我累了？今天有点辛苦但是你问我了，我有力气了！", category: "care" });
+            const home = () => ({ k: "아! 공주 아이스크림 가게 그리워... 다음 휴일 같이 가자? 🍦", c: "啊！好怀念公州的冰淇淋店... 下次休假一起去吧？🍦", category: "hometown" });
+            const cafe = () => ({ k: "오늘 핫한 카페 발견! 너랑 가서 사진 찍고 싶다 📸", c: "今天发现一家热门咖啡店！想和你去拍照📸", category: "cafe" });
+            const love = () => ({ k: "나도 너 엄청 좋아해!! 연습 중에 네 생각 났어 😝💗", c: "我也超级喜欢你！！练习时想到你了😝💗", category: "love" });
+            const daily = () => ({ k: "오늘 안무 연습 5시간 했어! 멤버들 귀 케어도 해줬지~ 너도 건강 조심해!", c: "今天编舞练习5小时！还帮成员们整理了耳麦~ 你也要注意健康！", category: "daily" });
+            const def = () => ({ k: "오늘 길에서 하트 모양 나뭇잎을 주웠어 ❤️🍂 너한테 보여주고 싶었어. 나는 네 생각으로 행복해.", c: "今天在路上捡到爱心形状的落叶❤️🍂想给你看。我想着你就很幸福。", category: "default" });
+            
+            if (lowerMsg.includes('冷淡') || lowerMsg.includes('别烦我')) replyObj = { k: "왜 차갑게 대하는 거야... 내가 잘못한 게 있으면 말해줘 😢", c: "为什么对我冷淡... 如果我有做错的地方请告诉我😢", category: "cold" };
+            else if (lowerMsg.includes('辛苦') || lowerMsg.includes('累吗')) replyObj = care();
+            else if (lowerMsg.includes('冰淇淋') || lowerMsg.includes('公州')) replyObj = home();
+            else if (lowerMsg.includes('咖啡') || lowerMsg.includes('拍照')) replyObj = cafe();
+            else if (lowerMsg.includes('喜欢') || lowerMsg.includes('想你')) replyObj = love();
+            else if (lowerMsg.includes('안녕') || lowerMsg.includes('你好')) replyObj = greet();
+            else if (lowerMsg.includes('今天怎么样') || lowerMsg.includes('练习')) replyObj = daily();
+            else replyObj = def();
+            
+            if (lastTriggeredCategory === replyObj.category) replyObj = def();
+            lastTriggeredCategory = replyObj.category;
+            categoryHistory.unshift(replyObj.category);
+            if(categoryHistory.length > 5) categoryHistory.pop();
+            const emojis = ["🐰💗", "🌸✨", "🍬🐣", "💕📸", "🎀🐻"];
+            return { korean: replyObj.k, chinese: replyObj.c, extraEmoji: emojis[Math.floor(Math.random() * emojis.length)] };
+        }
+        
+        // 调用API生成回复 (完全兼容自定义端口)
+        async function generateApiReply(userMessage) {
+            if(!currentApiKey || !currentBaseUrl) throw new Error('请先完整配置API地址和密钥');
+            const systemPrompt = `你叫李松河(Songha)，韩国练习生，2004年白羊座，ENFJ性格，外热内热，责任感强。说话活泼可爱，每次回复先输出韩文，然后换行加上"译："输出中文翻译。适当添加🐰💗表情。不否定努力，温暖黏人。`;
+            const chatUrl = currentBaseUrl.endsWith('/') ? `${currentBaseUrl}chat/completions` : `${currentBaseUrl}/chat/completions`;
+            const messages = [
+                { role: 'system', content: systemPrompt },
+                ...conversationHistory.slice(-8),
+                { role: 'user', content: userMessage }
+            ];
+            const response = await fetch(chatUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentApiKey}` },
+                body: JSON.stringify({ model: currentModel, messages, temperature: 0.9, max_tokens: 300 })
+            });
+            if(!response.ok) throw new Error(`API错误 ${response.status}`);
+            const data = await response.json();
+            let content = data.choices?.[0]?.message?.content || '';
+            let koreanPart = content, chinesePart = "💕 松河用心回应了~";
+            if(content.includes('译：')) {
+                const idx = content.indexOf('译：');
+                koreanPart = content.substring(0, idx).trim();
+                chinesePart = content.substring(idx+3).trim();
+            }
+            return { korean: koreanPart, chinese: chinesePart, extraEmoji: "💖🐰" };
+        }
+        
+        // 自动拉取模型（根据填入的密钥和base url，兼容 OpenAI 风格 /models 接口）
+        async function fetchModelsFromApi() {
+            const baseUrl = apiBaseUrlInput.value.trim();
+            const apiKey = apiKeyInput.value.trim();
+            if(!baseUrl || !apiKey) {
+                apiStatusDiv.innerText = "❌ 请先填写API地址和密钥再拉取模型";
+                return;
+            }
+            apiStatusDiv.innerText = "⏳ 正在拉取模型列表...";
+            modelListContainer.innerHTML = '<div class="loading-text">🔄 加载中，请稍候...</div>';
+            try {
+                const modelsUrl = baseUrl.endsWith('/') ? `${baseUrl}models` : `${baseUrl}/models`;
+                const res = await fetch(modelsUrl, {
+                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                });
+                if(!res.ok) throw new Error(`无法获取模型列表 (${res.status})`);
+                const data = await res.json();
+                let models = data.data || data.models || [];
+                if(Array.isArray(models) && models.length > 0) {
+                    availableModels = models.map(m => m.id || m).filter(id => typeof id === 'string');
+                    if(availableModels.length === 0) throw new Error('未找到有效模型ID');
+                    // 动态渲染模型选择UI
+                    modelListContainer.innerHTML = '';
+                    availableModels.forEach(modelId => {
+                        const modelDiv = document.createElement('div');
+                        modelDiv.className = 'model-item';
+                        if(currentModel === modelId) modelDiv.classList.add('selected');
+                        modelDiv.innerText = modelId;
+                        modelDiv.onclick = () => {
+                            document.querySelectorAll('.model-item').forEach(el => el.classList.remove('selected'));
+                            modelDiv.classList.add('selected');
+                            currentModel = modelId;
+                            apiStatusDiv.innerText = `✅ 已选择模型: ${modelId.substring(0, 40)}`;
+                        };
+                        modelListContainer.appendChild(modelDiv);
+                    });
+                    if(!currentModel && availableModels.length) currentModel = availableModels[0];
+                    apiStatusDiv.innerText = `✨ 成功拉取 ${availableModels.length} 个模型，请点击选择`;
+                } else {
+                    throw new Error('模型列表格式异常');
+                }
+            } catch(err) {
+                apiStatusDiv.innerText = `⚠️ 拉取失败: ${err.message}`;
+                modelListContainer.innerHTML = `<div style="color:#d96c8a;">❌ 拉取模型失败，可手动输入Model ID<br><input type="text" id="manualModel" placeholder="手动填写模型名称" style="margin-top:8px;"></div>`;
+                const manualInput = document.getElementById('manualModel');
+                if(manualInput) manualInput.addEventListener('change', (e) => { currentModel = e.target.value; apiStatusDiv.innerText = `📌 手动设置模型: ${currentModel}`; });
+            }
+        }
+        
+        // 保存配置
+        function saveApiConfig() {
+            const newBaseUrl = apiBaseUrlInput.value.trim();
+            const newKey = apiKeyInput.value.trim();
+            if(!newBaseUrl || !newKey) {
+                apiStatusDiv.innerText = "❌ API地址和密钥都不能为空";
+                return;
+            }
+            // 如果还没有选择模型，检查是否有选中的模型项
+            const selectedModelDiv = document.querySelector('.model-item.selected');
+            let finalModel = currentModel;
+            if(selectedModelDiv && !finalModel) finalModel = selectedModelDiv.innerText;
+            if(!finalModel && availableModels.length) finalModel = availableModels[0];
+            if(!finalModel) {
+                apiStatusDiv.innerText = "⚠️ 请先拉取模型列表并选择一个模型，或在手动输入框中填写";
+                return;
+            }
+            currentBaseUrl = newBaseUrl;
+            currentApiKey = newKey;
+            currentModel = finalModel;
+            localStorage.setItem('songha_base_url', currentBaseUrl);
+            localStorage.setItem('songha_api_key', currentApiKey);
+            localStorage.setItem('songha_model', currentModel);
+            apiConfigured = true;
+            apiStatusDiv.innerText = `✅ 配置已保存！模型: ${currentModel.substring(0, 35)} AI模式已启用`;
+            setTimeout(() => { apiModal.classList.remove('active'); }, 800);
+        }
+        
+        async function testApiConnection() {
+            const testUrl = apiBaseUrlInput.value.trim();
+            const testKey = apiKeyInput.value.trim();
+            if(!testUrl || !testKey) { apiStatusDiv.innerText = "❌ 请填写完整信息"; return; }
+            apiStatusDiv.innerText = "🔌 测试API连接中...";
+            try {
+                const modelsUrl = testUrl.endsWith('/') ? `${testUrl}models` : `${testUrl}/models`;
+                const res = await fetch(modelsUrl, { headers: { 'Authorization': `Bearer ${testKey}` } });
+                if(res.ok) apiStatusDiv.innerText = "🎉 API连接成功！可以拉取模型使用";
+                else apiStatusDiv.innerText = `⚠️ 连接失败 HTTP ${res.status}`;
+            } catch(e) { apiStatusDiv.innerText = `❌ 连接异常: ${e.message}`; }
+        }
+        
+        // 发送消息（自动模式）
+        async function sendMessage() {
+            if (isReplying) { pendingSend = true; return; }
+            let userText = messageInput.value.trim();
+            if (userText === "") return;
+            if (lastUserMessages.includes(userText)) {
+                messageInput.value = "";
+                messageInput.placeholder = "🐰 换个话题聊聊吧～";
+                setTimeout(() => { if(messageInput) messageInput.placeholder = "TO. 송하  💬 输入任何话..."; }, 1500);
+            }
+            lastUserMessages.unshift(userText);
+            if (lastUserMessages.length > 4) lastUserMessages.pop();
+            addMessage('user', userText, userText, "");
+            messageInput.value = "";
+            messageInput.style.height = 'auto';
+            isReplying = true;
+            sendBtn.style.opacity = "0.6";
+            sendBtn.style.pointerEvents = "none";
+            try {
+                await new Promise(r => setTimeout(r, 280));
+                let reply;
+                if (apiConfigured && currentApiKey && currentBaseUrl && currentModel) {
+                    try {
+                        reply = await generateApiReply(userText);
+                    } catch (apiErr) {
+                        console.warn("API降级", apiErr);
+                        apiStatusDiv.innerText = `⚠️ API请求失败，使用本地剧情`;
+                        reply = generateLocalReply(userText);
+                    }
+                } else {
+                    reply = generateLocalReply(userText);
+                }
+                addMessage('songha', reply.korean, reply.chinese, reply.extraEmoji);
+                createFloatingBear();
+                if (Math.random() > 0.7) setTimeout(() => createFloatingBear(), 300);
+            } catch (err) {
+                addMessage('songha', "아이고.. 문제가 생겼어 😢 미안해, 다시 해볼래?", "哎呀.. 出问题了😢 抱歉，再试一次好吗？", "💦");
+            } finally {
+                isReplying = false;
+                sendBtn.style.opacity = "1";
+                sendBtn.style.pointerEvents = "auto";
+                if (pendingSend) { pendingSend = false; sendMessage(); }
+            }
+        }
+        
+        function createFloatingBear() {
+            const container = document.getElementById('bearContainer');
+            const bears = ['🧸', '🐻', '🐼', '🐻‍❄️', '🎀🐻', '💗🐻'];
+            const bear = document.createElement('div');
+            bear.className = 'bear';
+            bear.innerText = bears[Math.floor(Math.random() * bears.length)];
+            bear.style.fontSize = (Math.random() * 18 + 20) + 'px';
+            bear.style.left = Math.random() * 90 + '%';
+            bear.style.animationDuration = Math.random() * 4 + 3.5 + 's';
+            container.appendChild(bear);
+            setTimeout(() => bear.remove(), 6000);
+        }
+        
+        function changeAvatar() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if(file) { const reader = new FileReader(); reader.onload = ev => avatarImg.src = ev.target.result; reader.readAsDataURL(file); }
+                else alert("选择图片");
+            };
+            input.click();
+        }
+        
+        function openModal() { apiModal.classList.add('active'); }
+        function closeModal(e) { if(e && e.target === apiModal) apiModal.classList.remove('active'); else if(!e) apiModal.classList.remove('active'); }
+        
+        // 欢迎初始化
+        function initWelcome() {
+            addMessage('songha', '안녕~ 오늘 뭐하고 있었어? ☺️ 나 퇴근 길인데 벌써 네 생각 나.', '嗨~ 今天在做什么呀？☺️ 我刚下班路上已经开始想你了。', '🐇💗');
+            setTimeout(() => addMessage('songha', '아! 맞다, 다음 주에 공주 가기로 했는데 너랑 같이 아이스크림 먹고 싶다 🍦 우리 같이 갈래?', '啊！对了，下周决定回公州，想和你一起吃冰淇淋🍦 我们一起去吗？', '🍦🐰'), 800);
+            setTimeout(() => createFloatingBear(), 1000);
+        }
+        
+        // 事件绑定
+        sendBtn.addEventListener('click', (e) => { e.preventDefault(); sendMessage(); });
+        messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+        messageInput.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 85) + 'px'; });
+        changeAvatarBtn.addEventListener('click', changeAvatar);
+        apiConfigBtn.addEventListener('click', openModal);
+        apiModal.addEventListener('click', closeModal);
+        fetchModelsBtn.addEventListener('click', fetchModelsFromApi);
+        saveApiBtn.addEventListener('click', saveApiConfig);
+        testApiBtn.addEventListener('click', testApiConnection);
+        setInterval(() => { if (document.hasFocus() && Math.random() > 0.7) createFloatingBear(); }, 13000);
+        initWelcome();
+    })();
+</script>
+</body>
+</html>
