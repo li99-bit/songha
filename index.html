@@ -3,843 +3,398 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🐰 李松河泡泡聊天室 | 好感度·智能对话</title>
+    <title>🐰 李松河泡泡聊天室 | 心动语音·ENFJ恋人</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: linear-gradient(145deg, #f7a1bc 0%, #f7b5cb 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: 'Segoe UI', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Roboto', 'Noto Sans KR', system-ui, sans-serif;
-            padding: 16px;
-            margin: 0;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; font-family: 'Segoe UI', 'SF Pro Text', -apple-system, 'Noto Sans KR', sans-serif;
+            padding: 16px; margin: 0;
         }
-
-        /* 手机卡片容器 */
         .phone-app {
-            width: 100%;
-            max-width: 380px;
-            height: 700px;
-            background-color: #fff2f8;
-            border-radius: 44px;
-            box-shadow: 0 30px 40px rgba(0, 0, 0, 0.25), 0 0 0 8px #fcd9e6, 0 0 0 12px #f8c4d6;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            width: 100%; max-width: 380px; height: 700px; background-color: #fff2f8;
+            border-radius: 44px; box-shadow: 0 30px 40px rgba(0,0,0,0.25), 0 0 0 8px #fcd9e6, 0 0 0 12px #f8c4d6;
+            overflow: hidden; display: flex; flex-direction: column; position: relative;
         }
-
-        /* 动态飘落小熊 */
-        .floating-bears {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10;
-            overflow: hidden;
-        }
-
-        .bear {
-            position: absolute;
-            font-size: 28px;
-            animation: fall linear forwards;
-            user-select: none;
-            opacity: 0.75;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-        }
-
-        @keyframes fall {
-            0% {
-                transform: translateY(-30px) rotate(0deg);
-                opacity: 0.8;
-            }
-            100% {
-                transform: translateY(740px) rotate(12deg);
-                opacity: 0;
-            }
-        }
-
-        /* 聊天头部 */
-        .chat-header {
-            background: #ffb3c6;
-            padding: 18px 18px 12px 18px;
-            border-bottom: 2px solid #ff9bb2;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-            position: relative;
-            z-index: 2;
-        }
-
-        .profile-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-        }
-
-        /* 圆形头像框 - 强制圆形 */
-        .avatar-wrapper {
-            position: relative;
-            width: 56px;
-            height: 56px;
-            flex-shrink: 0;
-        }
-        .avatar-img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2.5px solid white;
-            background-color: #ffe0e7;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-            display: block;
-        }
-        .change-avatar-btn {
-            position: absolute;
-            bottom: -4px;
-            right: -8px;
-            background: #ff6b8f;
-            border: none;
-            color: white;
-            font-size: 16px;
-            border-radius: 30px;
-            width: 26px;
-            height: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            font-weight: bold;
-            transition: all 0.1s;
-        }
-        .change-avatar-btn:active { transform: scale(0.92); background: #e85a7c;}
-
-        .artist-info {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-        .artist-name {
-            font-weight: 800;
-            font-size: 18px;
-            color: #572c3e;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .badge {
-            background: #ffda77;
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 30px;
-            color: #572c3e;
-            font-weight: bold;
-        }
-        .status {
-            font-size: 11px;
-            color: #ac5775;
-            margin-top: 4px;
-        }
-        /* 好感度条区域 */
-        .favor-section {
-            background: #ffe2ec;
-            border-radius: 30px;
-            padding: 4px 12px;
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .favor-label {
-            font-size: 10px;
-            font-weight: bold;
-            color: #b34e6e;
-        }
-        .favor-bar-bg {
-            flex: 1;
-            height: 6px;
-            background: #ffc0d0;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .favor-bar-fill {
-            height: 100%;
-            width: 0%;
-            background: #ff6b8f;
-            border-radius: 10px;
-            transition: width 0.3s ease;
-        }
-        .favor-value {
-            font-size: 11px;
-            font-weight: bold;
-            color: #c45a7a;
-            min-width: 42px;
-            text-align: right;
-        }
-
-        /* 头部右侧按钮组 */
-        .header-actions {
-            display: flex;
-            gap: 8px;
-        }
-        .icon-btn {
-            background: #ff8aa8;
-            border: none;
-            color: white;
-            font-size: 18px;
-            width: 38px;
-            height: 38px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.1s;
-        }
-        .icon-btn:active { transform: scale(0.94); }
-
-        /* 消息区域 */
         .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            background: #fff7fb;
+            flex: 1; overflow-y: auto; padding: 14px 12px; display: flex; flex-direction: column;
+            gap: 12px; background-size: cover; background-position: center; background-repeat: no-repeat;
             scroll-behavior: smooth;
         }
-
-        .message {
-            display: flex;
-            flex-direction: column;
-            max-width: 85%;
-            animation: fadeInUp 0.2s ease-out;
-            position: relative;
+        .floating-bears { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; overflow: hidden; }
+        .bear { position: absolute; font-size: 28px; animation: fall linear forwards; user-select: none; opacity: 0.75; }
+        @keyframes fall { 0% { transform: translateY(-30px) rotate(0deg); opacity: 0.8; } 100% { transform: translateY(740px) rotate(12deg); opacity: 0; } }
+        .chat-header {
+            background: #ffb3c6; padding: 12px 16px 10px 16px; border-bottom: 2px solid #ff9bb2;
+            display: flex; align-items: center; gap: 8px; flex-shrink: 0; z-index: 2;
         }
-        .msg-delete {
-            position: absolute;
-            right: -28px;
-            top: 20px;
-            font-size: 14px;
-            background: rgba(255,107,145,0.8);
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            cursor: pointer;
-            opacity: 0;
-            transition: 0.1s;
-            z-index: 5;
-        }
+        .profile-area { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .avatar-wrapper { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
+        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2.5px solid white; background-color: #ffe0e7; box-shadow: 0 2px 8px rgba(0,0,0,0.12); display: block; }
+        .change-avatar-btn { position: absolute; bottom: -4px; right: -8px; background: #ff6b8f; border: none; color: white; font-size: 14px; border-radius: 30px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; transition: 0.1s; }
+        .change-avatar-btn:active { transform: scale(0.92); }
+        .artist-info { display: flex; flex-direction: column; flex: 1; }
+        .artist-name { font-weight: 800; font-size: 15px; color: #572c3e; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .badge { background: #ffda77; font-size: 8px; padding: 2px 6px; border-radius: 30px; color: #572c3e; font-weight: bold; }
+        .status { font-size: 9px; color: #ac5775; margin-top: 2px; }
+        .favor-row { background: #ffe2ec; border-radius: 40px; padding: 3px 10px; margin-top: 4px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+        .favor-label { font-size: 10px; font-weight: bold; color: #b34e6e; display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+        .favor-bar-micro { flex: 1; height: 4px; background: #ffc0d0; border-radius: 10px; overflow: hidden; }
+        .favor-fill-micro { height: 100%; width: 0%; background: #ff6b8f; border-radius: 10px; transition: width 0.3s ease; }
+        .favor-percent-text { font-size: 10px; font-weight: bold; color: #c45a7a; min-width: 42px; text-align: right; }
+        .header-actions { display: flex; gap: 6px; }
+        .icon-btn { background: #ff8aa8; border: none; color: white; font-size: 16px; width: 34px; height: 34px; border-radius: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; }
+        .icon-btn:active { transform: scale(0.94); }
+        .message { display: flex; flex-direction: column; max-width: 85%; animation: fadeInUp 0.2s ease-out; position: relative; }
+        .msg-delete { position: absolute; right: -28px; top: 20px; font-size: 14px; background: rgba(255,107,145,0.8); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; opacity: 0; transition: 0.1s; z-index: 5; }
         .message:hover .msg-delete { opacity: 1; }
         .user .msg-delete { right: auto; left: -28px; }
-
         .message.user { align-self: flex-end; }
         .message.songha { align-self: flex-start; }
-
-        .bubble {
-            padding: 10px 14px;
-            border-radius: 22px;
-            font-size: 14px;
-            line-height: 1.45;
-            word-break: break-word;
-            white-space: pre-wrap;
-        }
-
-        .user .bubble {
-            background: #ffbfcf;
-            color: #351f28;
-            border-bottom-right-radius: 5px;
-            font-weight: 500;
-        }
-        .songha .bubble {
-            background: white;
-            border: 1px solid #ffd0dd;
-            color: #4f2e3c;
-            border-bottom-left-radius: 5px;
-        }
-
-        .message-name {
-            font-size: 11px;
-            margin-bottom: 4px;
-            margin-left: 8px;
-            color: #cf7e9b;
-            font-weight: 600;
-        }
+        .bubble { padding: 10px 14px; border-radius: 22px; font-size: 13px; line-height: 1.45; word-break: break-word; white-space: pre-wrap; }
+        .user .bubble { background: #ffbfcf; color: #351f28; border-bottom-right-radius: 5px; font-weight: 500; }
+        .songha .bubble { background: white; border: 1px solid #ffd0dd; color: #4f2e3c; border-bottom-left-radius: 5px; }
+        .voice-bubble { background: #ffe8f0 !important; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .voice-icon { font-size: 18px; animation: pulse 1s infinite; }
+        .voice-duration { font-size: 11px; font-weight: 500; color: #b34e6e; background: rgba(255,255,255,0.6); padding: 2px 6px; border-radius: 20px; }
+        @keyframes pulse { 0% { opacity: 0.6; transform: scale(1);} 100% { opacity: 1; transform: scale(1.1);} }
+        .message-name { font-size: 10px; margin-bottom: 4px; margin-left: 8px; color: #cf7e9b; font-weight: 600; }
         .user .message-name { text-align: right; margin-right: 8px; margin-left: 0; }
-        .timestamp { font-size: 9px; color: #dd9fb5; margin-top: 4px; margin-left: 12px; }
+        .timestamp { font-size: 8px; color: #dd9fb5; margin-top: 4px; margin-left: 12px; }
         .user .timestamp { text-align: right; margin-right: 12px; }
-
-        .input-area {
-            background: #ffeef4;
-            padding: 12px 16px;
-            border-top: 1px solid #ffdae5;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-shrink: 0;
-        }
-        .input-box {
-            flex: 1;
-            background: white;
-            border: none;
-            border-radius: 30px;
-            padding: 12px 18px;
-            font-size: 14px;
-            outline: none;
-            font-family: inherit;
-            color: #311e26;
-            resize: none;
-            max-height: 85px;
-        }
-        .input-box:focus { border: 1px solid #ff9bb5; box-shadow: 0 0 0 2px #ffe2ec; }
-        .send-btn {
-            background: #ff89aa;
-            border: none;
-            width: 46px;
-            height: 46px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 20px;
-            color: white;
-        }
-        .send-btn:active { transform: scale(0.94); background: #ff6b91; }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        .input-area { background: #ffeef4; padding: 10px 14px; border-top: 1px solid #ffdae5; display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+        .ins-icon-btn { background: #ffb3c6; border: none; width: 42px; height: 42px; border-radius: 30px; font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #572c3e; transition: 0.1s; }
+        .ins-icon-btn:active { transform: scale(0.94); }
+        .input-wrapper { flex: 1; display: flex; gap: 8px; align-items: center; }
+        .input-box { flex: 1; background: white; border: none; border-radius: 30px; padding: 10px 16px; font-size: 13px; outline: none; resize: none; font-family: inherit; }
+        .send-btn { background: #ff89aa; border: none; width: 42px; height: 42px; border-radius: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; color: white; transition: 0.1s; }
+        .send-btn:active { transform: scale(0.94); }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .chat-messages::-webkit-scrollbar { width: 4px; }
         .chat-messages::-webkit-scrollbar-track { background: #ffe2ec; border-radius: 10px; }
         .chat-messages::-webkit-scrollbar-thumb { background: #f5a7c0; border-radius: 10px; }
-
-        /* 模态框 */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.2s;
+        .ins-panel {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 200;
+            transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            display: flex; flex-direction: column; border-radius: 44px; overflow-y: auto; box-shadow: 4px 0 20px rgba(0,0,0,0.2);
         }
+        .ins-panel.open { transform: translateX(0); }
+        .ins-header { background: #ffb3c6; padding: 18px 18px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ff9bb2; }
+        .ins-header h2 { font-size: 18px; color: #572c3e; }
+        .close-ins { background: rgba(0,0,0,0.2); border: none; font-size: 22px; border-radius: 30px; width: 34px; cursor: pointer; }
+        .ins-cover { width: 100%; height: 140px; background-size: cover; background-position: center; background-color: #ffdae5; position: relative; cursor: pointer; }
+        .ins-cover-edit { position: absolute; bottom: 8px; right: 12px; background: rgba(0,0,0,0.5); color: white; font-size: 12px; padding: 4px 8px; border-radius: 20px; backdrop-filter: blur(4px); }
+        .ins-profile { padding: 16px; text-align: center; border-bottom: 1px solid #ffe2ec; margin-top: -30px; position: relative; z-index: 2; }
+        .ins-avatar-lg { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 8px; border: 3px solid white; cursor: pointer; }
+        .ins-stats { display: flex; justify-content: center; gap: 24px; margin: 10px 0; }
+        .stat-item { text-align: center; cursor: pointer; }
+        .stat-number { font-weight: bold; font-size: 16px; color: #2c1a23; }
+        .stat-label { font-size: 10px; color: #ac5775; text-transform: uppercase; letter-spacing: 0.5px; }
+        .ins-nickname { font-size: 18px; font-weight: bold; color: #2c1a23; margin-top: 5px; }
+        .ins-bio { font-size: 11px; color: #ac5775; margin-top: 4px; }
+        .edit-ins-btn { background: #ffe2ec; border: none; padding: 5px 14px; border-radius: 40px; margin-top: 8px; font-size: 11px; cursor: pointer; }
+        .ins-posts { flex: 1; padding: 14px; display: flex; flex-direction: column; gap: 18px; overflow-y: auto; }
+        .post-card { background: #fff9fb; border-radius: 24px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #ffdae5; }
+        .post-header { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+        .post-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+        .post-user { font-weight: bold; color: #572c3e; flex: 1; font-size: 13px; }
+        .post-actions { display: flex; gap: 10px; }
+        .post-action-btn { background: none; border: none; font-size: 14px; cursor: pointer; padding: 4px; border-radius: 30px; }
+        .post-content { font-size: 13px; margin: 8px 0; line-height: 1.4; }
+        .comment-section { margin-top: 10px; border-top: 1px solid #ffe2ec; padding-top: 10px; }
+        .comment-item { background: #fff0f5; border-radius: 20px; padding: 6px 10px; margin-bottom: 6px; font-size: 11px; }
+        .comment-input-area { display: flex; gap: 8px; margin-top: 8px; }
+        .comment-input { flex: 1; border: 1px solid #ffc0d0; border-radius: 40px; padding: 6px 10px; font-size: 11px; }
+        .comment-submit { background: #ff89aa; border: none; border-radius: 30px; padding: 0 12px; color: white; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .new-post-btn { background: #ff6b8f; border: none; color: white; padding: 10px; border-radius: 40px; margin: 6px 14px 14px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .toast-message { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.75); color: white; padding: 6px 16px; border-radius: 40px; font-size: 12px; z-index: 300; backdrop-filter: blur(8px); pointer-events: none; animation: fadeOut 2s ease forwards; }
+        @keyframes fadeOut { 0% { opacity: 0; transform: translateX(-50%) translateY(8px); } 15% { opacity: 1; transform: translateX(-50%) translateY(0); } 85% { opacity: 1; transform: translateX(-50%) translateY(0); } 100% { opacity: 0; transform: translateX(-50%) translateY(-8px); visibility: hidden; } }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; visibility: hidden; opacity: 0; transition: 0.2s; }
         .modal-overlay.active { visibility: visible; opacity: 1; }
-        .modal-card {
-            background: white;
-            width: 320px;
-            max-height: 80vh;
-            overflow-y: auto;
-            border-radius: 32px;
-            padding: 24px 20px;
-            text-align: center;
-        }
-        .modal-card h3 { color: #572c3e; margin-bottom: 16px; }
-        .modal-card input, .modal-card select {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ffc0d0;
-            border-radius: 30px;
-        }
-        .modal-card button {
-            background: #ff89aa;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 40px;
-            color: white;
-            margin: 8px 6px;
-            cursor: pointer;
-        }
+        .modal-card { background: white; width: 280px; border-radius: 32px; padding: 20px; text-align: center; }
+        .modal-card input, .modal-card textarea { width: 100%; margin: 8px 0; padding: 8px 12px; border-radius: 30px; border: 1px solid #ffc0d0; }
+        .modal-card button { background: #ff89aa; border: none; padding: 8px 14px; border-radius: 40px; margin: 4px; cursor: pointer; font-size: 12px; }
         .danger-btn { background: #d96c8a; }
-        .model-item { padding: 6px; background: #ffeef4; margin: 4px; border-radius: 20px; cursor: pointer; }
-        .api-status { font-size: 12px; margin-top: 12px; color: #ac5775; }
+        .model-item { padding: 4px 8px; background: #ffeef4; margin: 4px; border-radius: 20px; cursor: pointer; font-size: 11px; }
+        .bg-preview { width: 100%; height: 60px; background-size: cover; border-radius: 12px; margin: 8px 0; }
     </style>
 </head>
 <body>
 <div class="phone-app">
     <div class="floating-bears" id="bearContainer"></div>
-
     <div class="chat-header">
         <div class="profile-area">
-            <div class="avatar-wrapper">
-                <img id="avatarImg" class="avatar-img" src="https://picsum.photos/id/20/100/100" alt="myAvatar">
-                <button class="change-avatar-btn" id="changeAvatarBtn" aria-label="更换头像">📷</button>
-            </div>
+            <div class="avatar-wrapper"><img id="avatarImg" class="avatar-img" src="https://picsum.photos/id/20/100/100" alt="myAvatar"><button class="change-avatar-btn" id="changeAvatarBtn">📷</button></div>
             <div class="artist-info">
-                <div class="artist-name">이송하 · LEE SONGHA <span class="badge">🐣 练习生</span></div>
+                <div class="artist-name">이송하 · LEE SONGHA <span class="badge">🐣 练习生 · ENFJ</span></div>
                 <div class="status" id="liveStatus">💗 等待你的消息...</div>
-                <!-- 好感度UI -->
-                <div class="favor-section">
-                    <span class="favor-label">💖 好感度</span>
-                    <div class="favor-bar-bg"><div class="favor-bar-fill" id="favorFill"></div></div>
-                    <span class="favor-value" id="favorValue">0</span>
-                </div>
+                <div class="favor-row"><span class="favor-label">💕 心意值</span><div class="favor-bar-micro"><div class="favor-fill-micro" id="favorFillMini"></div></div><span class="favor-percent-text" id="favorPercent">0%</span></div>
             </div>
         </div>
-        <div class="header-actions">
-            <button class="icon-btn" id="userSettingsBtn">👤</button>
-            <button class="icon-btn" id="apiConfigBtn">⚙️</button>
-            <button class="icon-btn" id="recordMenuBtn">📋</button>
-        </div>
+        <div class="header-actions"><button class="icon-btn" id="userSettingsBtn">👤</button><button class="icon-btn" id="apiConfigBtn">⚙️</button><button class="icon-btn" id="recordMenuBtn">📋</button></div>
     </div>
-
     <div class="chat-messages" id="chatMessages"></div>
+    <div class="input-area"><button class="ins-icon-btn" id="insHomeBtn">📲</button><div class="input-wrapper"><textarea rows="1" class="input-box" id="messageInput" placeholder="TO. 송하 💬 输入任何话..."></textarea><button class="send-btn" id="sendBtn">➤</button></div></div>
 
-    <div class="input-area">
-        <textarea rows="1" class="input-box" id="messageInput" placeholder="TO. 송하  💬 输入任何话..."></textarea>
-        <button class="send-btn" id="sendBtn">➤</button>
-    </div>
-
-    <!-- 用户人设模态框 -->
-    <div class="modal-overlay" id="userModal">
-        <div class="modal-card">
-            <h3>👤 我的信息</h3>
-            <input type="text" id="userNameInput" placeholder="你的名字 (예: 지민 / 小樱)" value="">
-            <button id="saveUserBtn">💾 保存人设</button>
-            <div class="api-status" id="userStatus">设置名字后，AI会称呼你~</div>
+    <!-- INS 个人主页 -->
+    <div id="insPanel" class="ins-panel">
+        <div class="ins-header"><h2>📸 INS 个人主页</h2><button class="close-ins" id="closeInsBtn">✕</button></div>
+        <div class="ins-cover" id="insCover" style="background-image: url('https://picsum.photos/id/104/400/200');"><div class="ins-cover-edit">📷 更换背景</div></div>
+        <div class="ins-profile">
+            <img id="insAvatarImg" class="ins-avatar-lg" src="https://picsum.photos/id/20/100/100" alt="avatar">
+            <div class="ins-stats"><div class="stat-item" id="editPostsStat"><div class="stat-number" id="insPostsCount">0</div><div class="stat-label">Posts</div></div><div class="stat-item" id="editFollowersStat"><div class="stat-number" id="insFollowers">128</div><div class="stat-label">Followers</div></div><div class="stat-item" id="editFollowingStat"><div class="stat-number" id="insFollowing">95</div><div class="stat-label">Following</div></div></div>
+            <div class="ins-nickname" id="insNickname">나의 별</div><div class="ins-bio" id="insBio">✨ 喜欢星星和音乐 ✨</div>
+            <button class="edit-ins-btn" id="editProfileBtn">✏️ 编辑资料</button>
         </div>
+        <div class="ins-posts" id="insPostsContainer"></div><button class="new-post-btn" id="newPostBtn">+ 发布新帖</button>
     </div>
 
-    <!-- API配置模态框 -->
-    <div class="modal-overlay" id="apiModal">
-        <div class="modal-card">
-            <h3>🔌 API 配置</h3>
-            <input type="text" id="apiBaseUrl" placeholder="API地址 (含端口)" value="https://api.siliconflow.cn/v1">
-            <input type="text" id="apiKey" placeholder="API Key" value="">
-            <button id="fetchModelsBtn">📡 拉取模型列表</button>
-            <div id="modelListArea" class="model-list" style="max-height:120px; overflow-y:auto;"></div>
-            <button id="saveApiBtn">💾 保存配置</button>
-            <button id="testApiBtn">🔌 测试连接</button>
-            <div class="api-status" id="apiStatus">⚙️ 配置后使用AI，好感度影响回复</div>
-        </div>
-    </div>
-
-    <!-- 聊天记录管理 -->
-    <div class="modal-overlay" id="recordModal">
-        <div class="modal-card">
-            <h3>📋 聊天记录管理</h3>
-            <button id="clearAllChatBtn" class="danger-btn">🗑️ 清空所有聊天记录</button>
-            <button id="archiveChatBtn">💾 存档聊天记录 (下载JSON)</button>
-            <button id="loadArchiveBtn">📂 加载存档文件</button>
-            <input type="file" id="archiveFileInput" accept=".json" style="display:none;">
-            <div class="api-status">* 鼠标悬停消息旁点击❌删除单条<br>* 好感度随对话动态变化✨</div>
-        </div>
-    </div>
+    <!-- 模态框 -->
+    <div id="editProfileModal" class="modal-overlay"><div class="modal-card"><h3>📝 个人资料</h3><input id="editNickname" placeholder="昵称"><textarea id="editBio" rows="2" placeholder="简介"></textarea><button id="saveProfileBtn">保存</button><button id="cancelProfileBtn">取消</button></div></div>
+    <div id="editStatsModal" class="modal-overlay"><div class="modal-card"><h3>✏️ 自定义 INS 数据</h3><input id="editPostsNum" type="number" placeholder="Posts数量"><input id="editFollowersNum" type="number" placeholder="Followers数量"><input id="editFollowingNum" type="number" placeholder="Following数量"><button id="saveStatsBtn">保存</button><button id="cancelStatsBtn">取消</button></div></div>
+    <div id="newPostModal" class="modal-overlay"><div class="modal-card"><h3>✨ 新帖子</h3><textarea id="postContentInput" rows="3" placeholder="分享心情..."></textarea><button id="submitPostBtn">发布</button><button id="cancelPostBtn">取消</button></div></div>
+    <div class="modal-overlay" id="userModal"><div class="modal-card"><h3>👤 我的信息</h3><input id="userNameInput" placeholder="你的名字"><button id="saveUserBtn">💾 保存人设</button></div></div>
+    <div class="modal-overlay" id="apiModal"><div class="modal-card"><h3>🔌 API 配置</h3><input id="apiBaseUrl" placeholder="API地址" value="https://api.siliconflow.cn/v1"><input id="apiKey" placeholder="API Key"><button id="fetchModelsBtn">📡 拉取模型列表</button><div id="modelListArea" style="max-height:80px; overflow:auto;"></div><button id="saveApiBtn">💾 保存</button><button id="testApiBtn">🔌 测试</button><div class="api-status" id="apiStatus" style="font-size:10px;"></div><hr><button id="changeBgBtn">🎨 更换聊天背景图</button></div></div>
+    <div class="modal-overlay" id="recordModal"><div class="modal-card"><h3>📋 管理</h3><button id="clearAllChatBtn" class="danger-btn">🗑️ 清空记录</button><button id="archiveChatBtn">💾 存档</button><button id="loadArchiveBtn">📂 加载存档</button><input type="file" id="archiveFileInput" accept=".json" style="display:none;"></div></div>
+    <input type="file" id="bgFileInput" accept="image/*" style="display:none;"><input type="file" id="insBgFileInput" accept="image/*" style="display:none;">
 </div>
 
 <script>
     (function(){
-        // ----------------------------- 好感度系统 + 完整功能 -----------------------------
-        let favorability = parseInt(localStorage.getItem('songha_favor') || '0'); // 0-100
+        // ---------- 好感度与核心数据 ----------
+        let favorability = parseInt(localStorage.getItem('songha_favor') || '0');
         const MAX_FAVOR = 100;
+        let userName = localStorage.getItem('user_name') || '친구';
+        document.getElementById('userNameInput').value = userName;
+        function updateFavorUI(){
+            let percent = Math.floor((favorability/MAX_FAVOR)*100);
+            document.getElementById('favorFillMini').style.width = `${percent}%`;
+            document.getElementById('favorPercent').innerText = `${percent}%`;
+            localStorage.setItem('songha_favor', favorability);
+            let statusSpan = document.getElementById('liveStatus');
+            if(favorability >= 85) statusSpan.innerText = "💞 超级黏人 • 想把你融入日常";
+            else if(favorability >= 65) statusSpan.innerText = "💖 好感升温 • 总想到你";
+            else if(favorability >= 40) statusSpan.innerText = "🌸 有点在意 • 想多了解你";
+            else if(favorability >= 15) statusSpan.innerText = "🍃 初识 • 但觉得你很温暖";
+            else statusSpan.innerText = "🌱 礼貌观察 • 期待更多对话";
+        }
+        function addFavorability(amount){ let newVal=Math.min(MAX_FAVOR, Math.max(0, favorability+amount)); if(newVal!==favorability){ favorability=newVal; updateFavorUI(); return true;} return false; }
+        // 强化版好感变动 (符合人设雷点)
+        function calculateFavorChange(msg){
+            let lower = msg.toLowerCase();
+            if(lower.includes('辛苦')||lower.includes('累吗')||lower.includes('还好吗')) return 5;
+            if(lower.includes('喜欢')||lower.includes('想你')||lower.includes('보고 싶어')||lower.includes('좋아해')) return 6;
+            if(lower.includes('可爱')||lower.includes('帅气')||lower.includes('예뻐')) return 4;
+            if(lower.includes('冰淇淋')||lower.includes('公州')||lower.includes('咖啡')||lower.includes('拍照')) return 4;
+            if(lower.includes('冷淡')||lower.includes('别烦我')||lower.includes('讨厌你')) return -15;
+            if(lower.includes('练习没用')||lower.includes('放弃')||lower.includes('别练了')||lower.includes('否定付出')) return -20;
+            if(lower.includes('成员')&&(lower.includes('差')||lower.includes('讨厌'))) return -12;
+            if(lower.includes('안녕')||lower.includes('你好')) return 2;
+            return 1;
+        }
         
-        // DOM 元素
+        // ---------- 聊天核心 ----------
+        let chatMessagesData = [], nextMsgId=1, conversationHistory=[];
+        let lastAssistantReply = "";
+        let isReplying=false, pendingSend=false;
+        let currentBaseUrl = localStorage.getItem('songha_base_url')||'https://api.siliconflow.cn/v1';
+        let currentApiKey = localStorage.getItem('songha_api_key')||'';
+        let currentModel = localStorage.getItem('songha_model')||'';
+        let apiConfigured = !!(currentApiKey && currentBaseUrl);
         const messagesContainer = document.getElementById('chatMessages');
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendBtn');
         const avatarImg = document.getElementById('avatarImg');
-        const changeAvatarBtn = document.getElementById('changeAvatarBtn');
-        const liveStatusSpan = document.getElementById('liveStatus');
-        const favorFill = document.getElementById('favorFill');
-        const favorValueSpan = document.getElementById('favorValue');
         
-        // 用户人设
-        let userName = localStorage.getItem('user_name') || '친구';
-        document.getElementById('userNameInput').value = userName;
+        // 聊天背景图
+        const chatBgInput = document.getElementById('bgFileInput');
+        function setChatBackground(imageUrl){ messagesContainer.style.backgroundImage = `url(${imageUrl})`; localStorage.setItem('chat_bg', imageUrl); }
+        function loadChatBackground(){ let saved = localStorage.getItem('chat_bg'); if(saved) setChatBackground(saved); else messagesContainer.style.backgroundImage = ''; }
+        document.getElementById('changeBgBtn').addEventListener('click',()=>chatBgInput.click());
+        chatBgInput.onchange = e => { let file = e.target.files[0]; if(file){ let reader = new FileReader(); reader.onload = ev => setChatBackground(ev.target.result); reader.readAsDataURL(file); } };
         
-        // API相关
-        let currentBaseUrl = localStorage.getItem('songha_base_url') || 'https://api.siliconflow.cn/v1';
-        let currentApiKey = localStorage.getItem('songha_api_key') || '';
-        let currentModel = localStorage.getItem('songha_model') || '';
-        let apiConfigured = !!(currentApiKey && currentBaseUrl);
-        
-        // 聊天记录存储
-        let chatMessagesData = [];
-        let nextMsgId = 1;
-        let conversationHistory = [];
-        let lastUserMessages = [];
-        let lastTriggeredCategory = null;
-        
-        // 好感度更新UI
-        function updateFavorUI() {
-            favorFill.style.width = `${favorability}%`;
-            favorValueSpan.innerText = favorability;
-            localStorage.setItem('songha_favor', favorability);
-            // 根据好感度改变状态文字
-            if(favorability >= 80) liveStatusSpan.innerText = "💞 超级心动 • 黏人模式 ON";
-            else if(favorability >= 50) liveStatusSpan.innerText = "💖 好感升温 • 总想到你";
-            else if(favorability >= 20) liveStatusSpan.innerText = "🌸 有点在意 • 想多了解你";
-            else liveStatusSpan.innerText = "🍃 初识 • 期待更多对话";
-        }
-        
-        // 增加好感度 (根据消息内容质量)
-        function addFavorability(amount) {
-            let newVal = favorability + amount;
-            if(newVal > MAX_FAVOR) newVal = MAX_FAVOR;
-            if(newVal < 0) newVal = 0;
-            if(newVal !== favorability) {
-                favorability = newVal;
-                updateFavorUI();
-                return true;
-            }
-            return false;
-        }
-        
-        // 根据用户消息分析好感变动 (温暖/关心提升，冷暴力降低)
-        function calculateFavorChange(userMsg) {
-            const lower = userMsg.toLowerCase();
-            if(lower.includes('辛苦') || lower.includes('累吗') || lower.includes('还好吗') || lower.includes('关心')) return 3;
-            if(lower.includes('喜欢') || lower.includes('想你') || lower.includes('보고 싶어') || lower.includes('좋아해')) return 4;
-            if(lower.includes('可爱') || lower.includes('帅气') || lower.includes('예뻐')) return 2;
-            if(lower.includes('冰淇淋') || lower.includes('公州') || lower.includes('咖啡') || lower.includes('拍照')) return 2;
-            if(lower.includes('冷淡') || lower.includes('别烦我') || lower.includes('讨厌你')) return -8;
-            if(lower.includes('练习没用') || lower.includes('放弃') || lower.includes('别练了')) return -10;
-            if(lower.includes('안녕') || lower.includes('你好')) return 1;
-            return 1; // 日常聊天微量增加
-        }
-        
-        // 根据好感度修改回复的语气/内容附加
-        function applyFavorToReply(korean, chinese) {
-            if(favorability >= 80) {
-                korean = korean.replace(/송하/g, '❤️송하❤️').replace(/🐰/g, '🐰💗') + " 너랑 있으면 나는 정말 행복해 🥰";
-                chinese = chinese + " 和你在一起我真的很幸福🥰";
-            } else if(favorability >= 50) {
-                if(!korean.includes('점점')) korean += " 요즘 네 생각이 점점 더 많이 나... ☺️";
-                chinese += " 最近越来越常想到你... ☺️";
-            } else if(favorability <= 15 && favorability >=0) {
-                korean = "음... 조금 어색하지만... 천천히 알아가고 싶어 🫣 " + korean;
-                chinese = "嗯... 虽然有点尴尬... 但想慢慢了解你 🫣 " + chinese;
-            }
-            return { korean, chinese };
-        }
-        
-        function getCurrentTimeString() {
-            const now = new Date();
-            return `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-        }
-        
-        // 渲染全部消息
-        function renderAllMessages() {
-            messagesContainer.innerHTML = '';
-            chatMessagesData.forEach(msg => appendMessageElement(msg));
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-        
-        function appendMessageElement(msg) {
-            const div = document.createElement('div');
-            div.className = `message ${msg.role}`;
-            div.setAttribute('data-msg-id', msg.id);
+        function showToast(msg){ let div=document.createElement('div'); div.className='toast-message'; div.innerText=msg; document.body.appendChild(div); setTimeout(()=>div.remove(),2000); }
+        function getTime(){ const d=new Date(); return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`; }
+        function renderAllMessages(){ messagesContainer.innerHTML=''; chatMessagesData.forEach(m=>appendMsgEl(m)); messagesContainer.scrollTop=messagesContainer.scrollHeight; }
+        function appendMsgEl(msg){
+            const div=document.createElement('div'); div.className=`message ${msg.role}`; div.setAttribute('data-msg-id',msg.id);
             let bubbleContent = '';
-            if(msg.role === 'songha') {
-                bubbleContent = `${msg.korean} ${msg.extraEmoji || ''}<br><span style="font-size: 11px; color:#bf708c;">✧ 译：${msg.chinese}</span>`;
-            } else {
-                bubbleContent = msg.content;
-            }
-            div.innerHTML = `
-                <div class="message-name">${msg.role === 'songha' ? '🐰 송하' : `✨ ${userName} ✨`}</div>
-                <div class="bubble">${bubbleContent}</div>
-                <div class="timestamp">${msg.timestamp}</div>
-                <div class="msg-delete" onclick="window.deleteMessageById(${msg.id})">❌</div>
-            `;
+            if(msg.role==='songha'){
+                if(msg.isVoice){
+                    // 严格格式: 🎙️---3s | 韩文(中文)
+                    const duration = msg.voiceDuration || 3;
+                    bubbleContent = `<div class="voice-bubble"><span class="voice-icon">🎙️</span><span class="voice-duration">---${duration}s</span> | ${msg.korean} (${msg.chinese})</div>`;
+                } else {
+                    bubbleContent = `${msg.korean} ${msg.extraEmoji||''}<br><span style="font-size:10px;color:#bf708c;">✧ 译：${msg.chinese}</span>`;
+                }
+            } else { bubbleContent = msg.content; }
+            div.innerHTML=`<div class="message-name">${msg.role==='songha'?'🐰 송하':`✨ ${userName} ✨`}</div><div class="bubble ${msg.isVoice ? 'voice-bubble' : ''}">${bubbleContent}</div><div class="timestamp">${msg.timestamp}</div><div class="msg-delete" onclick="window.deleteMessageById(${msg.id})">❌</div>`;
             messagesContainer.appendChild(div);
         }
-        
-        window.deleteMessageById = function(id) {
-            const index = chatMessagesData.findIndex(m => m.id === id);
-            if(index !== -1) {
-                chatMessagesData.splice(index, 1);
-                renderAllMessages();
-                // 重建对话历史
-                conversationHistory = chatMessagesData.map(m => ({ role: m.role === 'songha' ? 'assistant' : 'user', content: m.content || (m.korean + m.chinese) }));
-            }
-        };
-        
-        function addMessage(role, koreanText, chineseTranslation, extraEmoji = "") {
-            const timestamp = getCurrentTimeString();
-            const newMsg = { id: nextMsgId++, role, timestamp, extraEmoji };
-            if(role === 'songha') {
-                newMsg.korean = koreanText;
-                newMsg.chinese = chineseTranslation;
-                newMsg.content = `${koreanText} (${chineseTranslation})`;
-            } else {
-                newMsg.content = koreanText || chineseTranslation;
-            }
-            chatMessagesData.push(newMsg);
-            appendMessageElement(newMsg);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            conversationHistory.push({ role: role === 'songha' ? 'assistant' : 'user', content: newMsg.content });
-            if(conversationHistory.length > 20) conversationHistory.shift();
+        window.deleteMessageById=(id)=>{ chatMessagesData=chatMessagesData.filter(m=>m.id!==id); renderAllMessages(); conversationHistory=chatMessagesData.map(m=>({role:m.role==='songha'?'assistant':'user', content:m.content||(m.korean+m.chinese)})); };
+        function addMessage(role, korean, chinese, extra="", isVoice=false, voiceDuration=3){
+            let ts=getTime(); let newMsg={id:nextMsgId++, role, timestamp:ts, extraEmoji:extra, isVoice, voiceDuration};
+            if(role==='songha'){ newMsg.korean=korean; newMsg.chinese=chinese; newMsg.content=`${korean} (${chinese})`; lastAssistantReply = korean; }
+            else { newMsg.content=korean; }
+            chatMessagesData.push(newMsg); appendMsgEl(newMsg); messagesContainer.scrollTop=messagesContainer.scrollHeight;
+            conversationHistory.push({role:role==='songha'?'assistant':'user', content:newMsg.content});
+            if(conversationHistory.length>20) conversationHistory.shift();
             return newMsg;
         }
         
-        // 本地剧情 (增强好感度融入)
-        function generateLocalReply(userMessage, favorChange) {
-            const lower = userMessage.toLowerCase();
-            let reply = { korean: "", chinese: "", category: "default" };
-            const baseGreet = `어! ${userName} 왔구나~ 오늘 기분 어때? ☀️`;
-            const baseCare = `${userName} 정말 다정하다... 내가 조금 피곤했는데 눈치챘어? 고마워 🥺`;
-            const baseLove = `나도 ${userName} 너무 좋아해!! 오늘 연습 중에 네 생각 났어 😝💗`;
-            const baseDefault = `${userName}아~ 오늘 길에서 예쁜 나뭇잎 봤어 🍂 너한테 보여주고 싶었어.`;
-            
-            if(lower.includes('안녕')||lower.includes('你好')) reply = { korean: baseGreet, chinese: `啊！${userName}你来啦~ 今天心情怎么样？☀️`, category:"greet" };
-            else if(lower.includes('辛苦')||lower.includes('累')) reply = { korean: baseCare, chinese: `${userName} 真的好温柔... 我有点累被你察觉了，谢谢你🥺`, category:"care" };
-            else if(lower.includes('喜欢')||lower.includes('想你')) reply = { korean: baseLove, chinese: `我也超喜欢${userName}!! 今天练习时也想到你了😝💗`, category:"love" };
-            else reply = { korean: baseDefault, chinese: `${userName}呀~ 今天路上看到漂亮的落叶🍂 想给你看来着。`, category:"default" };
-            
-            if(lastTriggeredCategory === reply.category) reply = { korean: `${userName}랑 이런저런 얘기 나누니까 행복해~ 💕`, chinese: `和${userName}聊天真的很幸福~ 💕`, category:"default_alt" };
-            lastTriggeredCategory = reply.category;
-            let final = applyFavorToReply(reply.korean, reply.chinese);
-            return { korean: final.korean, chinese: final.chinese, extraEmoji: "🐰💗" };
-        }
-        
-        // API生成 (好感度注入system prompt)
-        async function generateApiReply(userMessage, favorChange) {
-            const favorLevel = favorability >= 70 ? "非常亲密" : (favorability >= 40 ? "朋友以上" : "初识阶段");
-            const systemPrompt = `你叫李松河(Songha)，韩国练习生，ENFJ，温暖黏人。当前好感度数值: ${favorability}/100 (${favorLevel})。用户的名字是"${userName}"。请根据好感度调整语气：好感度高时更亲密、更撒娇；好感度低时更礼貌但仍有好奇心。回答必须韩文+换行"译："中文。适当使用emoji。好感度变化由系统自动处理，你只需自然回应。`;
-            const chatUrl = currentBaseUrl.endsWith('/') ? `${currentBaseUrl}chat/completions` : `${currentBaseUrl}/chat/completions`;
-            const messages = [
-                { role: 'system', content: systemPrompt },
-                ...conversationHistory.slice(-10),
-                { role: 'user', content: userMessage }
-            ];
-            const res = await fetch(chatUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentApiKey}` },
-                body: JSON.stringify({ model: currentModel, messages, temperature: 0.85, max_tokens: 300 })
-            });
-            if(!res.ok) throw new Error(`API ${res.status}`);
-            const data = await res.json();
-            let content = data.choices?.[0]?.message?.content || '';
-            let korean = content, chinese = "💕 松河回应~";
-            if(content.includes('译：')) {
-                const idx = content.indexOf('译：');
-                korean = content.substring(0, idx).trim();
-                chinese = content.substring(idx+3).trim();
+        // 强化ENFJ人设的润色
+        function applyFavorAndPersona(korean, chinese){
+            if(favorability >= 70){
+                korean = korean.replace(/송하/g,'❤️송하❤️') + ` ${userName}랑 있으면 나는 정말 행복해! 오늘 연습 중에 네 생각 났어 🥰`;
+                chinese = chinese + ` 和你在一起我真的好幸福！今天练习时想到你了 🥰`;
+            } else if(favorability >= 45){
+                korean += ` 요즘 ${userName} 생각이 점점 더 많이 나... 우리 주말에 공주 갈래? 내가 아이스크림 사줄게 🍦`;
+                chinese += ` 最近越来越常想到${userName}... 周末我们去公州吧？我请你吃冰淇淋 🍦`;
+            } else if(favorability <= 20){
+                korean = `음... 조금 어색하지만, ${userName}는 정말 다정한 사람인 것 같아. 천천히 알아가고 싶어 🫣 ` + korean;
+                chinese = `嗯..虽然有点尴尬, 但${userName}好像是真的很温柔的人。想慢慢了解你 🫣 ` + chinese;
             }
-            return { korean, chinese, extraEmoji: "💖🐰" };
+            if(!korean.includes('🐰')) korean += " 🐰";
+            return {korean, chinese};
         }
         
-        let isReplying = false, pendingSend = false;
-        async function sendMessage() {
-            if(isReplying) { pendingSend = true; return; }
-            let userText = messageInput.value.trim();
-            if(!userText) return;
-            if(lastUserMessages.includes(userText)) messageInput.placeholder = "🐰 换个话题吧～";
-            lastUserMessages.unshift(userText);
-            if(lastUserMessages.length>4) lastUserMessages.pop();
-            
-            // 好感度变化计算并增加
-            let favorDelta = calculateFavorChange(userText);
-            addFavorability(favorDelta);
-            
-            addMessage('user', userText, userText, "");
-            messageInput.value = "";
-            messageInput.style.height = 'auto';
-            isReplying = true;
-            sendBtn.style.opacity = "0.6";
-            sendBtn.style.pointerEvents = "none";
-            try {
-                await new Promise(r => setTimeout(r, 280));
-                let reply;
-                if(apiConfigured && currentApiKey && currentBaseUrl && currentModel) {
-                    try { reply = await generateApiReply(userText, favorDelta); }
-                    catch(e) { reply = generateLocalReply(userText, favorDelta); }
-                } else { reply = generateLocalReply(userText, favorDelta); }
-                // 应用好感度额外修饰 (再次确保)
-                let finalReply = applyFavorToReply(reply.korean, reply.chinese);
-                addMessage('songha', finalReply.korean, finalReply.chinese, reply.extraEmoji);
-                createFloatingBear();
-            } catch(err) { addMessage('songha', "아이고.. 잠시 문제가 생겼어 😢", "哎呀.. 暂时出问题了😢", "💦"); }
-            finally {
-                isReplying = false;
-                sendBtn.style.opacity = "1";
-                sendBtn.style.pointerEvents = "auto";
-                if(pendingSend) { pendingSend = false; sendMessage(); }
+        // 本地回复融入公州/冰淇淋/照顾人细节
+        function generateLocalReply(userMsg){
+            const lower = userMsg.toLowerCase();
+            let korean = "", chinese = "";
+            if(lower.includes('안녕')||lower.includes('你好')){ korean = `어! ${userName} 왔구나~ 나 연습 끝나고 바로 왔어! 오늘 공주에서 맛있는 빵 사왔는데 같이 먹을래? 🍞 우리 멤버들도 좋아해`; chinese = `啊！${userName}你来啦~ 我刚练习结束就过来了！今天从公州买了好吃的面包，要一起吃吗？🍞 成员们也很喜欢`; }
+            else if(lower.includes('辛苦')||lower.includes('累')){ korean = `${userName} 정말 다정하다... 나 사실 조금 피곤했는데 눈치챘어? 고마워. 그래도 너 보니까 힘난다. 우리 같이 커피 마실래? ☕️`; chinese = `${userName}真的好温柔... 我其实有点累，被你察觉到了？谢谢你。但是看到你我就有力量了。我们一起去喝咖啡吗？☕️`; }
+            else if(lower.includes('喜欢')||lower.includes('想你')){ korean = `나도 ${userName} 너무 좋아해!! 오늘 연습 중에 네 생각 났어. 우리 주말에 같이 카페 갈래? 내가 사진 찍어줄게 📸 그리고 공주 아이스크림도!`; chinese = `我也超级喜欢${userName}!! 今天练习的时候想到你了。周末我们要不要一起去咖啡店？我给你拍照 📸 还有公州冰淇淋！`; }
+            else if(lower.includes('冰淇淋')){ korean = `아! 공주 그 아이스크림 가게! 나 거기 어릴 때부터 자주 갔어. ${userName}랑 같이 가고 싶다 🍦 다음에 같이 가자! 내가 맛있는 거 알려줄게`; chinese = `啊！公州那家冰淇淋店！我从小常去。想和${userName}一起去 🍦 下次一起吧！我告诉你好吃的口味`; }
+            else { korean = `${userName}아~ 오늘 연습하는데 갑자기 네 생각 났어. 내일 우리 멤버들이랑 같이 놀러 갈 건데 너도 올래? 🐰 내가 너 챙길게`; chinese = `${userName}呀~ 今天练习的时候突然想起你了。明天我们成员们要一起去玩，你也来吗？🐰 我会照顾你的`; }
+            let final = applyFavorAndPersona(korean, chinese);
+            return {korean: final.korean, chinese: final.chinese, extraEmoji: "💖🐰"};
+        }
+        
+        async function generateApiReply(userMsg){
+            const systemPrompt = `你叫李松河(Songha)，04年白羊座，韩国忠清南道公州市出身。你是练习超过6年的练习生，ENFJ人格，责任感强、温柔包容、共情力高。182cm，私下活泼开朗像兔子，但舞台上正气凛然。爱一个人会变得黏人，主动分享日常，用行动表达关心。很会照顾人，习惯确认周围人的状态。回复必须【韩文+换行"译："中文】。好感度${favorability}/100，用户名为"${userName}"。根据好感度调整亲密程度。不要否定对方的努力，不要冷暴力。要展现出你温暖、细腻、喜欢记录生活的特质。`;
+            let url = currentBaseUrl.replace(/\/$/,'')+'/chat/completions';
+            let res = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${currentApiKey}`}, body: JSON.stringify({model: currentModel, messages: [{role: 'system', content: systemPrompt}, ...conversationHistory.slice(-8), {role: 'user', content: userMsg}], temperature: 0.85, max_tokens: 350}) });
+            if(!res.ok) throw new Error();
+            let data = await res.json(); let content = data.choices?.[0]?.message?.content || '';
+            let korean = content, chinese = "💕";
+            if(content.includes('译：')){ let idx = content.indexOf('译：'); korean = content.substring(0, idx).trim(); chinese = content.substring(idx+3).trim(); }
+            let final = applyFavorAndPersona(korean, chinese);
+            return {korean: final.korean, chinese: final.chinese, extraEmoji: "💖🐰"};
+        }
+        
+        // 语音消息：严格格式 🎙️---Xs | 韩文(中文)
+        async function maybeSendVoiceReply(userText){
+            const isVoice = Math.random() < 0.3; // 30%概率语音
+            let reply;
+            if(apiConfigured && currentApiKey && currentBaseUrl && currentModel){
+                try{ reply = await generateApiReply(userText); } catch(e){ reply = generateLocalReply(userText); }
+            } else { reply = generateLocalReply(userText); }
+            const voiceDuration = Math.floor(Math.random() * 4) + 2; // 2-5秒
+            if(isVoice){
+                addMessage('songha', reply.korean, reply.chinese, reply.extraEmoji+" 🎵", true, voiceDuration);
+                showToast("🎤 松河发来了一条语音消息");
+            } else {
+                addMessage('songha', reply.korean, reply.chinese, reply.extraEmoji);
             }
+            createFloatingBear();
         }
         
-        // 飘落小熊
-        function createFloatingBear() {
-            const container = document.getElementById('bearContainer');
-            const bears = ['🧸','🐻','🐼','🎀🐻'];
-            const bear = document.createElement('div');
-            bear.className = 'bear';
-            bear.innerText = bears[Math.floor(Math.random()*bears.length)];
-            bear.style.fontSize = (Math.random()*18+20)+'px';
-            bear.style.left = Math.random()*90+'%';
-            bear.style.animationDuration = Math.random()*4+3.5+'s';
-            container.appendChild(bear);
-            setTimeout(()=>bear.remove(),6000);
+        async function sendMessage(){
+            if(isReplying){ pendingSend=true; return; }
+            let userText = messageInput.value.trim(); if(!userText) return;
+            addFavorability(calculateFavorChange(userText));
+            addMessage('user', userText, userText, ""); messageInput.value = ""; isReplying = true;
+            sendBtn.style.opacity = "0.6"; sendBtn.style.pointerEvents = "none";
+            await new Promise(r=>setTimeout(r, 200));
+            try{ await maybeSendVoiceReply(userText); } catch(err){ addMessage('songha', '아이고.. 문제가 생겼어 😢 내가 직접 답할게!', '哎呀..暂时出问题了，我直接回答你吧！', '💦'); showToast("⚠️ 回复生成异常"); }
+            finally{ isReplying=false; sendBtn.style.opacity="1"; sendBtn.style.pointerEvents="auto"; if(pendingSend){ pendingSend=false; sendMessage(); } }
         }
+        function createFloatingBear(){ let c=document.getElementById('bearContainer'); let bear=document.createElement('div'); bear.className='bear'; bear.innerText=['🧸','🐻','🐼'][Math.floor(Math.random()*3)]; bear.style.left=Math.random()*90+'%'; bear.style.animationDuration=Math.random()*4+3+'s'; c.appendChild(bear); setTimeout(()=>bear.remove(),6000); }
         
-        function changeAvatar() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if(file) { const reader = new FileReader(); reader.onload = ev => avatarImg.src = ev.target.result; reader.readAsDataURL(file); }
-            };
-            input.click();
+        // ---------- INS功能 (完整保留) ----------
+        let insPosts = JSON.parse(localStorage.getItem('ins_posts') || '[]');
+        let insNickname = localStorage.getItem('ins_nickname') || '나의 별';
+        let insBio = localStorage.getItem('ins_bio') || '✨ 喜欢星星和音乐 ✨';
+        let insAvatarUrl = localStorage.getItem('ins_avatar') || avatarImg.src;
+        let insCoverUrl = localStorage.getItem('ins_cover') || 'https://picsum.photos/id/104/400/200';
+        let insFollowers = parseInt(localStorage.getItem('ins_followers') || '128');
+        let insFollowing = parseInt(localStorage.getItem('ins_following') || '95');
+        function updateInsStatsUI(){ document.getElementById('insPostsCount').innerText = insPosts.length; document.getElementById('insFollowers').innerText = insFollowers; document.getElementById('insFollowing').innerText = insFollowing; }
+        const statsModal = document.getElementById('editStatsModal');
+        document.getElementById('editPostsStat').addEventListener('click',()=>{ document.getElementById('editPostsNum').value = insPosts.length; document.getElementById('editFollowersNum').value = insFollowers; document.getElementById('editFollowingNum').value = insFollowing; statsModal.classList.add('active'); });
+        document.getElementById('editFollowersStat').addEventListener('click',()=>{ document.getElementById('editPostsNum').value = insPosts.length; document.getElementById('editFollowersNum').value = insFollowers; document.getElementById('editFollowingNum').value = insFollowing; statsModal.classList.add('active'); });
+        document.getElementById('editFollowingStat').addEventListener('click',()=>{ document.getElementById('editPostsNum').value = insPosts.length; document.getElementById('editFollowersNum').value = insFollowers; document.getElementById('editFollowingNum').value = insFollowing; statsModal.classList.add('active'); });
+        document.getElementById('saveStatsBtn').onclick=()=>{ let newFollowers = parseInt(document.getElementById('editFollowersNum').value); let newFollowing = parseInt(document.getElementById('editFollowingNum').value); if(!isNaN(newFollowers)) insFollowers = newFollowers; if(!isNaN(newFollowing)) insFollowing = newFollowing; localStorage.setItem('ins_followers', insFollowers); localStorage.setItem('ins_following', insFollowing); updateInsStatsUI(); statsModal.classList.remove('active'); showToast("✅ INS数据已更新"); };
+        document.getElementById('cancelStatsBtn').onclick=()=>statsModal.classList.remove('active');
+        async function generateKoreanChineseComment(postContent){
+            try { if(apiConfigured && currentApiKey && currentBaseUrl && currentModel){ let reply = await generateApiReply(`인스타 댓글: "${postContent}" 에 대한 따뜻한 댓글을 한글과 중국어 번역과 함께 짧게 작성해줘`); return { korean: reply.korean.substring(0,70), chinese: reply.chinese.substring(0,50) }; } } catch(e) {}
+            if(postContent.includes('开心')) return { korean: `와! 정말 행복해 보여요! 🥰 공주 아이스크림 생각나네`, chinese: `哇！看起来好幸福！🥰 让我想起公州冰淇淋` };
+            if(postContent.includes('累')) return { korean: `힘내세요! 제가 항상 응원할게요 💪 오늘 밤에 따뜻한 차 한 잔 어때요?`, chinese: `加油！我会一直支持你的💪 今晚喝杯热茶怎么样？` };
+            return { korean: `오! ${userName}님의 소식 정말 반가워요! 저도 오늘 연습 중에 생각났어요 ✨`, chinese: `哦！看到${userName}的消息真开心！我今天练习时也想起你了✨` };
         }
-        
-        // 存档/加载/清空
-        function clearAllMessages() {
-            if(confirm('⚠️ 清空所有聊天记录？好感度会保留。')) {
-                chatMessagesData = [];
-                conversationHistory = [];
-                messagesContainer.innerHTML = '';
-                addMessage('songha', '안녕~ 오늘 뭐하고 있었어? ☺️ 나 퇴근 길인데 벌써 네 생각 나.', `嗨~ ${userName}，今天在做什么呀？☺️ 我刚下班路上已经开始想你了。`, '🐇💗');
-                setTimeout(() => addMessage('songha', '아! 맞다, 다음 주에 공주 가기로 했는데 너랑 같이 아이스크림 먹고 싶다 🍦 우리 같이 갈래?', `啊！对了，下周决定回公州，想和${userName}一起吃冰淇淋🍦 我们一起去吗？`, '🍦🐰'), 500);
-            }
+        async function forwardPostToChat(postContent){
+            showToast("📲 转发成功！已发送至聊天室"); addMessage('user', `📲 [INS转发] ${insNickname}: ${postContent}`, `📲 转发自INS: ${postContent}`, "📸");
+            insPanel.classList.remove('open'); isReplying=true;
+            try{ let reply; if(apiConfigured && currentApiKey && currentBaseUrl && currentModel){ try{ reply = await generateApiReply(`인스타에 "${postContent}" 글을 봤어! 따뜻하게 반응해줘`); } catch(e){ reply = generateLocalReply(postContent); } } else { reply = generateLocalReply(postContent); } addMessage('songha', reply.korean, reply.chinese, reply.extraEmoji+"✨"); }catch(e){ addMessage('songha', '아이구~ 너의 인스타글 너무 마음에 들어! 💖 공주에서 만나고 싶어', `哇~ 你的INS帖子我很喜欢！💖 想在公州见你`, '🐻'); }
+            isReplying=false;
         }
-        function archiveChatHistory() {
-            const exportData = { userName, favorability, messages: chatMessagesData, exportTime: new Date().toISOString() };
-            const blob = new Blob([JSON.stringify(exportData,null,2)], {type:'application/json'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `songha_chat_${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(blob);
-        }
-        function loadArchive(file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if(data.messages) chatMessagesData = data.messages;
-                    if(data.favorability !== undefined) favorability = Math.min(MAX_FAVOR, Math.max(0, data.favorability));
-                    if(data.userName) userName = data.userName;
-                    localStorage.setItem('user_name', userName);
-                    document.getElementById('userNameInput').value = userName;
-                    updateFavorUI();
-                    nextMsgId = Math.max(...chatMessagesData.map(m=>m.id),0)+1;
-                    renderAllMessages();
-                    conversationHistory = chatMessagesData.map(m => ({ role: m.role === 'songha' ? 'assistant' : 'user', content: m.content || (m.korean + m.chinese) }));
-                } catch(err) { alert('存档解析失败'); }
-            };
-            reader.readAsText(file);
-        }
-        
-        // API模型拉取等
-        async function fetchModels() {
-            const base = document.getElementById('apiBaseUrl').value.trim();
-            const key = document.getElementById('apiKey').value.trim();
-            if(!base||!key) { apiStatusDiv.innerText='❌ 填写地址和密钥'; return; }
-            apiStatusDiv.innerText='⏳ 拉取模型...';
-            const area = document.getElementById('modelListArea');
-            area.innerHTML = '<div>🔄 加载中</div>';
-            try {
-                const url = base.endsWith('/')?`${base}models`:`${base}/models`;
-                const res = await fetch(url, { headers: { 'Authorization': `Bearer ${key}` } });
-                if(!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                let models = data.data || data.models || [];
-                area.innerHTML = '';
-                models.forEach(m => {
-                    const modelId = m.id || m;
-                    const div = document.createElement('div');
-                    div.className = 'model-item';
-                    div.innerText = modelId;
-                    div.onclick = () => { document.querySelectorAll('.model-item').forEach(el=>el.classList.remove('selected')); div.classList.add('selected'); currentModel = modelId; };
-                    area.appendChild(div);
+        function renderInsPosts(){
+            const container = document.getElementById('insPostsContainer'); if(!container) return; container.innerHTML = '';
+            insPosts.forEach((post, idx) => {
+                const postDiv = document.createElement('div'); postDiv.className='post-card';
+                postDiv.innerHTML = `<div class="post-header"><img class="post-avatar" src="${insAvatarUrl}" onerror="this.src='https://picsum.photos/id/20/40/40'"><span class="post-user">${insNickname}</span><div class="post-actions"><button class="post-action-btn forward-post" data-idx="${idx}">📤 转发</button><button class="post-action-btn delete-post" data-idx="${idx}">🗑️ 删除</button></div></div><div class="post-content">${post.content}</div><div class="comment-section">${post.comments.map(c=>`<div class="comment-item"><strong>${c.author}</strong> ${c.text}</div>`).join('')}<div class="comment-input-area"><input class="comment-input" id="commentInput-${idx}" placeholder="写下评论..."><button class="comment-submit" data-idx="${idx}">💬</button></div></div>`;
+                container.appendChild(postDiv);
+                postDiv.querySelector('.forward-post').addEventListener('click', async (e) => { e.stopPropagation(); await forwardPostToChat(post.content); });
+                postDiv.querySelector('.delete-post').addEventListener('click', (e) => { e.stopPropagation(); insPosts.splice(idx,1); saveInsData(); renderInsPosts(); updateInsStatsUI(); showToast("🗑️ 帖子已删除"); });
+                postDiv.querySelector('.comment-submit').addEventListener('click', async (e) => {
+                    const input = postDiv.querySelector(`.comment-input`); const text = input.value.trim(); if(!text) return;
+                    post.comments.push({ author: insNickname, text });
+                    setTimeout(async ()=>{ let comment = await generateKoreanChineseComment(text); let fullComment = `${comment.korean} 译：${comment.chinese}`; post.comments.push({ author: "송하 🐰", text: fullComment }); saveInsData(); renderInsPosts(); }, 300);
+                    saveInsData(); renderInsPosts(); input.value='';
                 });
-                apiStatusDiv.innerText = `✅ 获取到 ${models.length} 个模型`;
-            } catch(e) { area.innerHTML = `<div>❌ 失败: ${e.message}</div>`; }
+            }); updateInsStatsUI();
         }
-        function saveApiConfig() {
-            const base = document.getElementById('apiBaseUrl').value.trim();
-            const key = document.getElementById('apiKey').value.trim();
-            const selected = document.querySelector('.model-item.selected');
-            let model = selected ? selected.innerText : currentModel;
-            if(!base||!key||!model) { apiStatusDiv.innerText='❌ 完整填写并选择模型'; return; }
-            currentBaseUrl = base; currentApiKey = key; currentModel = model;
-            localStorage.setItem('songha_base_url', currentBaseUrl);
-            localStorage.setItem('songha_api_key', currentApiKey);
-            localStorage.setItem('songha_model', currentModel);
-            apiConfigured = true;
-            apiStatusDiv.innerText = `✅ API已配置: ${model.substring(0,30)}`;
-            apiModal.classList.remove('active');
+        function saveInsData(){ localStorage.setItem('ins_posts', JSON.stringify(insPosts)); localStorage.setItem('ins_nickname', insNickname); localStorage.setItem('ins_bio', insBio); localStorage.setItem('ins_avatar', insAvatarUrl); localStorage.setItem('ins_cover', insCoverUrl); localStorage.setItem('ins_followers', insFollowers); localStorage.setItem('ins_following', insFollowing); }
+        async function addNewPost(content){
+            const newPost = { id: Date.now(), content, comments: [] }; insPosts.unshift(newPost); saveInsData(); renderInsPosts(); updateInsStatsUI(); showToast("✨ 帖子发布成功！");
+            setTimeout(async () => { let comment = await generateKoreanChineseComment(content); let fullComment = `${comment.korean} 译：${comment.chinese}`; newPost.comments.push({ author: "송하 🐰", text: fullComment }); saveInsData(); renderInsPosts(); addMessage('songha', `✨ 인스타 댓글: ${comment.korean}`, `✨ INS评论: ${comment.chinese}`, "💬"); }, 500);
         }
-        async function testApi() {
-            const base = document.getElementById('apiBaseUrl').value.trim();
-            const key = document.getElementById('apiKey').value.trim();
-            if(!base||!key) { apiStatusDiv.innerText='❌ 填写完整'; return; }
-            apiStatusDiv.innerText='🔌 测试...';
-            try {
-                const url = base.endsWith('/')?`${base}models`:`${base}/models`;
-                const res = await fetch(url, { headers: { 'Authorization': `Bearer ${key}` } });
-                apiStatusDiv.innerText = res.ok ? '🎉 API可用' : `⚠️ ${res.status}`;
-            } catch(e) { apiStatusDiv.innerText = `❌ 异常: ${e.message}`; }
-        }
+        const insPanel = document.getElementById('insPanel');
+        document.getElementById('insHomeBtn').onclick=()=>{ insPanel.classList.add('open'); renderInsPosts(); document.getElementById('insAvatarImg').src=insAvatarUrl; document.getElementById('insNickname').innerText=insNickname; document.getElementById('insBio').innerText=insBio; document.getElementById('insCover').style.backgroundImage = `url(${insCoverUrl})`; updateInsStatsUI(); };
+        document.getElementById('closeInsBtn').onclick=()=>insPanel.classList.remove('open');
+        const editModal = document.getElementById('editProfileModal');
+        document.getElementById('editProfileBtn').onclick=()=>{ document.getElementById('editNickname').value=insNickname; document.getElementById('editBio').value=insBio; editModal.classList.add('active'); };
+        document.getElementById('saveProfileBtn').onclick=()=>{ let nn=document.getElementById('editNickname').value.trim(); if(nn) insNickname=nn; insBio=document.getElementById('editBio').value.trim(); saveInsData(); document.getElementById('insNickname').innerText=insNickname; document.getElementById('insBio').innerText=insBio; editModal.classList.remove('active'); renderInsPosts(); showToast("✅ 资料已更新"); };
+        document.getElementById('cancelProfileBtn').onclick=()=>editModal.classList.remove('active');
+        const newPostModal = document.getElementById('newPostModal');
+        document.getElementById('newPostBtn').onclick=()=>newPostModal.classList.add('active');
+        document.getElementById('submitPostBtn').onclick=()=>{ let c=document.getElementById('postContentInput').value.trim(); if(c){ addNewPost(c); document.getElementById('postContentInput').value=''; newPostModal.classList.remove('active'); } };
+        document.getElementById('cancelPostBtn').onclick=()=>newPostModal.classList.remove('active');
+        const insBgInput = document.getElementById('insBgFileInput');
+        document.getElementById('insCover').addEventListener('click', (e) => { if(e.target.classList.contains('ins-cover-edit') || e.target === document.getElementById('insCover')) insBgInput.click(); });
+        insBgInput.onchange = e => { let file = e.target.files[0]; if(file){ let reader = new FileReader(); reader.onload = ev => { insCoverUrl = ev.target.result; document.getElementById('insCover').style.backgroundImage = `url(${insCoverUrl})`; localStorage.setItem('ins_cover', insCoverUrl); showToast("🖼️ INS背景已更换"); }; reader.readAsDataURL(file); } };
+        function setupAvatarPicker(target,key){ let inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.onchange=e=>{ let f=e.target.files[0]; if(f){ let rd=new FileReader(); rd.onload=ev=>{ target.src=ev.target.result; if(key) localStorage.setItem(key, ev.target.result); if(key==='ins_avatar') insAvatarUrl=ev.target.result; showToast("🖼️ 头像已更换"); }; rd.readAsDataURL(f); } }; inp.click(); }
+        document.getElementById('insAvatarImg').addEventListener('click',()=>setupAvatarPicker(document.getElementById('insAvatarImg'),'ins_avatar'));
+        document.getElementById('changeAvatarBtn').addEventListener('click',()=>setupAvatarPicker(avatarImg,''));
         
-        function saveUserSettings() {
-            const newName = document.getElementById('userNameInput').value.trim();
-            if(newName) { userName = newName; localStorage.setItem('user_name', userName); renderAllMessages(); userModal.classList.remove('active'); }
-        }
-        
-        function toggleModal(modal, show) { if(show) modal.classList.add('active'); else modal.classList.remove('active'); }
-        
-        // 初始化好感UI与欢迎
-        function init() {
-            updateFavorUI();
-            if(chatMessagesData.length === 0) {
-                addMessage('songha', '안녕~ 오늘 뭐하고 있었어? ☺️ 나 퇴근 길인데 벌써 네 생각 나.', `嗨~ ${userName}，今天在做什么呀？☺️ 我刚下班路上已经开始想你了。`, '🐇💗');
-                setTimeout(() => addMessage('songha', '아! 맞다, 다음 주에 공주 가기로 했는데 너랑 같이 아이스크림 먹고 싶다 🍦 우리 같이 갈래?', `啊！对了，下周决定回公州，想和${userName}一起吃冰淇淋🍦 我们一起去吗？`, '🍦🐰'), 500);
-            } else renderAllMessages();
-            setInterval(() => { if(document.hasFocus() && Math.random()>0.7) createFloatingBear(); }, 13000);
-        }
-        
-        // 绑定事件
-        const userModalEl = document.getElementById('userModal');
-        const apiModalEl = document.getElementById('apiModal');
-        const recordModalEl = document.getElementById('recordModal');
-        const apiStatusDiv = document.getElementById('apiStatus');
-        document.getElementById('userSettingsBtn').onclick = () => toggleModal(userModalEl, true);
-        document.getElementById('apiConfigBtn').onclick = () => toggleModal(apiModalEl, true);
-        document.getElementById('recordMenuBtn').onclick = () => toggleModal(recordModalEl, true);
-        [userModalEl, apiModalEl, recordModalEl].forEach(m => m.onclick = (e) => { if(e.target===m) m.classList.remove('active'); });
-        document.getElementById('saveUserBtn').onclick = saveUserSettings;
-        document.getElementById('saveApiBtn').onclick = saveApiConfig;
-        document.getElementById('testApiBtn').onclick = testApi;
-        document.getElementById('fetchModelsBtn').onclick = fetchModels;
-        document.getElementById('clearAllChatBtn').onclick = clearAllMessages;
-        document.getElementById('archiveChatBtn').onclick = archiveChatHistory;
-        document.getElementById('loadArchiveBtn').onclick = () => document.getElementById('archiveFileInput').click();
-        document.getElementById('archiveFileInput').onchange = (e) => { if(e.target.files[0]) loadArchive(e.target.files[0]); };
-        sendBtn.onclick = (e) => { e.preventDefault(); sendMessage(); };
-        messageInput.addEventListener('keypress', (e) => { if(e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-        messageInput.addEventListener('input', function() { this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,85)+'px'; });
-        changeAvatarBtn.onclick = changeAvatar;
-        
+        // 模态框绑定
+        const userModal=document.getElementById('userModal'), apiModal=document.getElementById('apiModal'), recordModal=document.getElementById('recordModal');
+        document.getElementById('userSettingsBtn').onclick=()=>userModal.classList.add('active');
+        document.getElementById('apiConfigBtn').onclick=()=>apiModal.classList.add('active');
+        document.getElementById('recordMenuBtn').onclick=()=>recordModal.classList.add('active');
+        [userModal,apiModal,recordModal,editModal,newPostModal,statsModal].forEach(m=>m.onclick=e=>{ if(e.target===m) m.classList.remove('active'); });
+        document.getElementById('saveUserBtn').onclick=()=>{ let n=document.getElementById('userNameInput').value.trim(); if(n){ userName=n; localStorage.setItem('user_name',userName); renderAllMessages(); userModal.classList.remove('active'); showToast(`👋 你好，${userName}`); } };
+        document.getElementById('saveApiBtn').onclick=()=>{ currentBaseUrl=document.getElementById('apiBaseUrl').value; currentApiKey=document.getElementById('apiKey').value; let sel=document.querySelector('.model-item.selected'); if(sel) currentModel=sel.innerText; localStorage.setItem('songha_base_url',currentBaseUrl); localStorage.setItem('songha_api_key',currentApiKey); localStorage.setItem('songha_model',currentModel); apiConfigured=true; apiModal.classList.remove('active'); showToast("⚙️ API配置已保存"); };
+        document.getElementById('testApiBtn').onclick=async()=>{ let div=document.getElementById('apiStatus'); div.innerText='测试中...'; try{ let url=currentBaseUrl.replace(/\/$/,'')+'/models'; let res=await fetch(url,{headers:{'Authorization':`Bearer ${currentApiKey}`}}); div.innerText=res.ok?'✅ API可用':'❌ 失败'; if(res.ok) showToast("✅ API连接成功"); else showToast("❌ API测试失败"); }catch(e){ div.innerText='❌ 异常'; showToast("🔌 连接异常"); } };
+        document.getElementById('fetchModelsBtn').onclick=async()=>{ let area=document.getElementById('modelListArea'); try{ let url=currentBaseUrl.replace(/\/$/,'')+'/models'; let res=await fetch(url,{headers:{'Authorization':`Bearer ${currentApiKey}`}}); let data=await res.json(); let models=data.data||[]; area.innerHTML=''; models.forEach(m=>{ let d=document.createElement('div'); d.className='model-item'; d.innerText=m.id; d.onclick=()=>{ document.querySelectorAll('.model-item').forEach(el=>el.classList.remove('selected')); d.classList.add('selected'); }; area.appendChild(d); }); showToast(`📡 获取到${models.length}个模型`); }catch(e){ area.innerHTML='❌ 拉取失败'; showToast("模型拉取失败"); } };
+        document.getElementById('clearAllChatBtn').onclick=()=>{ if(confirm('清空聊天记录?保留好感度')){ chatMessagesData=[]; conversationHistory=[]; lastAssistantReply=""; renderAllMessages(); addMessage('songha','안녕~ 오늘 뭐하고 있었어? ☺️ 나 방금 연습 끝났어!',`嗨~ ${userName}今天在做什么呀？☺️ 我刚结束练习！`,'🐇💗'); showToast("聊天记录已清空"); } };
+        document.getElementById('archiveChatBtn').onclick=()=>{ let data=JSON.stringify({messages:chatMessagesData,favorability,userName}); let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([data])); a.download='chat_backup.json'; a.click(); showToast("💾 存档已下载"); };
+        document.getElementById('loadArchiveBtn').onclick=()=>document.getElementById('archiveFileInput').click();
+        document.getElementById('archiveFileInput').onchange=e=>{ let file=e.target.files[0]; let reader=new FileReader(); reader.onload=ev=>{ try{ let data=JSON.parse(ev.target.result); if(data.messages) chatMessagesData=data.messages; if(data.favorability!==undefined)favorability=data.favorability; if(data.userName)userName=data.userName; localStorage.setItem('user_name',userName); updateFavorUI(); renderAllMessages(); conversationHistory=chatMessagesData.map(m=>({role:m.role==='songha'?'assistant':'user', content:m.content||(m.korean+m.chinese)})); showToast("📂 存档加载成功"); }catch(e){ showToast("❌ 存档解析失败"); } }; reader.readAsText(file); };
+        sendBtn.onclick=()=>sendMessage(); messageInput.addEventListener('keypress',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } });
+        function init(){ loadChatBackground(); updateFavorUI(); if(chatMessagesData.length===0){ addMessage('songha','안녕~ 오늘 뭐하고 있었어? ☺️ 나 방금 연습 끝났어! 공주에서 맛있는 빵 사왔는데 같이 먹을래? 🍞',`嗨~ ${userName}今天在做什么呀？☺️ 我刚结束练习！从公州买了好吃的面包，要一起吃吗？🍞`,'🐇💗'); setTimeout(()=>addMessage('songha','아! 맞다, 다음 주에 공주 가기로 했는데 너랑 같이 아이스크림 먹고 싶다 🍦 우리 같이 갈래?',`啊！对了，下周决定回公州，想和${userName}一起吃冰淇淋🍦 我们一起去吗？`,'🍦🐰'),500); } else renderAllMessages(); setInterval(()=>{ if(Math.random()>0.7) createFloatingBear(); },13000); }
         init();
     })();
 </script>
